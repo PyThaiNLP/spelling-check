@@ -1,4 +1,4 @@
-# Thai_Spell_Check
+# Thai Spell Check
 Thai Spell Check using Conditional Random Field (CRF) (Machine learning)
 
 ## Requirements
