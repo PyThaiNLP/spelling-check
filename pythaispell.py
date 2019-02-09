@@ -1,11 +1,12 @@
 import codecs
-from pythainlp.tokenize import syllable_tokenize as word_tokenize
 import re
-import sklearn_crfsuite
-from pythainlp.corpus import stopwords
-stopwords = stopwords.words('thai')
-from pythainlp.corpus.thaisyllable import get_data as syllable_dict
 import string
+from pythainlp.tokenize import tcc
+from pythainlp.tokenize import syllable_tokenize as word_tokenize
+from pythainlp.corpus.thaisyllable import get_data as syllable_dict
+from pythainlp.corpus import stopwords
+import sklearn_crfsuite
+stopwords = stopwords.words('thai')
 invalidChars = set(string.punctuation.replace("_", ""))
 dict_s=list(set(syllable_dict()))
 def is_special_characters(w):
