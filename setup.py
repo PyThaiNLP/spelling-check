@@ -14,7 +14,7 @@ setup(
     author_email='wannaphong@kkumail.com',
     url='https://github.com/wannaphongcom/Thai_Spell_Check',
     packages=['.'],
-    package_data={'': ['LICENSE','README.md']},
+    package_data={'': ['LICENSE','README.md','sp.model']},
     include_package_data=True,
     install_requires=requirements,
     license='Apache Software License 2.0',
