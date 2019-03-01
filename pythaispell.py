@@ -11,7 +11,7 @@ try:
 except:
     from pythainlp.corpus.common import thai_syllables,thai_stopwords
     stopwords = list(thai_stopwords())
-    syllable_dict = thai_syllables()
+    syllable_dict = thai_syllables
 
 import sklearn_crfsuite
 
