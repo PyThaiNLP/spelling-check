@@ -10,6 +10,26 @@ import sklearn_crfsuite
 stopwords = stopwords.words('thai')
 invalidChars = set(string.punctuation.replace("_", ""))
 dict_s=list(set(syllable_dict()))
+def c(word):
+    for i in list('กขฃคฆงจชซญฎฏฐฑฒณดตถทธนบปพฟภมยรลวศษสฬอ'):
+        if i in word:
+            return True
+    return False
+def n(word):
+    for i in list('ฅฉผฟฌหฮ'):
+        if i in word:
+            return True
+    return False
+def v(word):
+    for i in list('ะาำิีืึุู'):
+        if i in word:
+            return True
+    return False
+def w(word):
+    for i in list('เแโใไ'):
+        if i in word:
+            return True
+    return False
 def is_special_characters(w):
     if any(char in invalidChars for char in w):
         return True
@@ -22,7 +42,10 @@ def lenbytcc(w):
 def in_dict(word):
     return word in dict_s
 def has_silencer(word):
-    return '์' in word
+    for i in list('์ๆฯ.'):
+        if i in word:
+            return True
+    return False
 def has_tonemarks(word):
     t=False
     for i in ['่','้','็','๊','๋']:
@@ -67,8 +90,12 @@ def doc2features(doc, i):
         'word.tonemarks':has_tonemarks(word),
         'word.in_dict':in_dict(word),
         'word.silencer':has_silencer(word),
-        'word.isdigit()': word.isdigit(),
+        'word.isdigit': word.isdigit(),
         'word.lentcc':lenbytcc(word),
+        'word.c':c(word),
+        'word.n':n(word),
+        'word.v':v(word),
+        'word.w':w(word),
         'word.is_special_characters':is_special_characters(word)
     }
     if i > 0:
@@ -83,35 +110,30 @@ def doc2features(doc, i):
         features['word.prevsilencer']=has_silencer(prevword)
         features['word.prevwordisdigit'] = prevword.isdigit()
         features['word.prevlentcc'] = lenbytcc(prevword)
+        features['word.prev_c'] = c(prevword)
+        features['word.prev_n'] = n(prevword)
+        features['word.prev_w'] = w(prevword)
+        features['word.prev_v'] = v(prevword)
         features['word.prev_is_special_characters'] =is_special_characters(prevword)
     else:
         features['BOS'] = True # Special "Beginning of Sequence" tag
-    """if i < len(doc)-1 and i+2< len(doc)-1:
-        nextword = doc[i+2][0]
-        features['word.next2word'] = nextword
-        features['word.next2isspace']=nextword.isspace()
-        features['word.next2isthai']=isThaiWord(nextword)
-        features['word.next2tonemarks']=has_tonemarks(nextword)
-        features['word.next2stopword']=is_stopword(nextword)
-        features['word.next2in_dict']=in_dict(nextword)
-        features['word.next2in_isnumthai']=is_numthai(nextword)
-        features['word.next2silencer']=has_silencer(nextword)
-        features['word.next2wordisdigit'] = nextword.isdigit()
-        features['word.next2lentcc']=lenbytcc(nextword)
-        features['word.next2_is_special_characters']=is_special_characters(nextword)"""
     # Features from next word
     if i < len(doc)-1:
         nextword = doc[i+1][0]
         features['word.nextword'] = nextword
-        features['word.nextisspace']=nextword.isspace()
-        features['word.nextisthai']=isThaiWord(nextword)
-        features['word.nexttonemarks']=has_tonemarks(nextword)
-        features['word.nextstopword']=is_stopword(nextword)
-        features['word.nextin_dict']=in_dict(nextword)
-        features['word.nextin_isnumthai']=is_numthai(nextword)
-        features['word.nextsilencer']=has_silencer(nextword)
-        features['word.nextwordisdigit'] = nextword.isdigit()
-        features['word.nextlentcc']=lenbytcc(nextword)
+        features['word.next_isspace']=nextword.isspace()
+        features['word.next_isthai']=isThaiWord(nextword)
+        features['word.next_tonemarks']=has_tonemarks(nextword)
+        features['word.next_stopword']=is_stopword(nextword)
+        features['word.next_in_dict']=in_dict(nextword)
+        features['word.next_in_isnumthai']=is_numthai(nextword)
+        features['word.next_silencer']=has_silencer(nextword)
+        features['word.next_wordisdigit'] = nextword.isdigit()
+        features['word.next_lentcc']=lenbytcc(nextword)
+        features['word.next_c']=c(nextword)
+        features['word.next_n']=n(nextword)
+        features['word.next_w']=w(nextword)
+        features['word.next_v']=v(nextword)
         features['word.next_is_special_characters']=is_special_characters(nextword)
     else:
         features['EOS'] = True # Special "End of Sequence" tag
