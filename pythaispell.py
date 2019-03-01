@@ -162,7 +162,7 @@ crf = sklearn_crfsuite.CRF(
     model_filename="sp.model"
 )
 
-def get(text,autoreplace=False):
+def spell(text,autocorrect=False):
     word_cut=word_tokenize(text)
     #print(word_cut)
     X_test = extract_features([(i,) for i in word_cut])
@@ -193,7 +193,7 @@ def get(text,autoreplace=False):
             temp='O'
         else:
             output+=b[0]
-    if autoreplace:
+    if autocorrect:
         f="(<คำผิด>)(.*)(</คำผิด>)"
         output=output.replace("<คำผิด>","|---|<คำผิด>|---|").replace("</คำผิด>","|---|</คำผิด>|---|")
         listall=output.split("|---|")
