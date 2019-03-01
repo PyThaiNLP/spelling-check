@@ -195,7 +195,8 @@ def get(text,autoreplace=False):
             output+=b[0]
     if autoreplace:
         f="(<คำผิด>)(.*)(</คำผิด>)"
-        listall=re.split(f,output)
+        output=output.replace("<คำผิด>","|---|<คำผิด>|---|").replace("</คำผิด>","|---|</คำผิด>|---|")
+        listall=output.split("|---|")
         i=0
         output=""
         ii=len(listall)
