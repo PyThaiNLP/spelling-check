@@ -12,7 +12,7 @@ Google Colab : https://colab.research.google.com/drive/1IE2r74a7Xb_h4haLtbgMTnQe
 
 ```python
 import pythaispell
-print(pythaispell.get("สวัสดีนะคับผม"))
+print(pythaispell.spell("สวัสดีนะคับผม"))
 ```
 result 
 
