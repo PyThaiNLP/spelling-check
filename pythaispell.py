@@ -14,7 +14,7 @@ except:
     syllable_dict = thai_syllables
 
 import sklearn_crfsuite
-
+from pythainlp.spell.pn import correct
 invalidChars = set(string.punctuation.replace("_", ""))
 dict_s=list(set(syllable_dict()))
 def c(word):
@@ -162,7 +162,7 @@ crf = sklearn_crfsuite.CRF(
     model_filename="sp.model"
 )
 
-def get(text):
+def get(text,autoreplace=False):
     word_cut=word_tokenize(text)
     #print(word_cut)
     X_test = extract_features([(i,) for i in word_cut])
@@ -193,4 +193,17 @@ def get(text):
             temp='O'
         else:
             output+=b[0]
+    if autoreplace:
+        f="(<คำผิด>)(.*)(</คำผิด>)"
+        listall=re.split(f,output)
+        i=0
+        output=""
+        ii=len(listall)
+        while i<ii:
+            if listall[i]=="<คำผิด>":
+                output+=correct(listall[i+1])
+                i+=3
+            else:
+                output+=listall[i]
+                i+=1
     return output
