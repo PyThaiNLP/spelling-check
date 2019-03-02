@@ -176,6 +176,8 @@ def spell(text,autocorrect=False,worddict=None):
         word=w_rank.items()
         check=NorvigSpellChecker(custom_dict=word)
         checking="thai2fit"
+    elif checking=="thai2fit" and worddict!=None:
+        pass
     else:
         checking=""
         check=NorvigSpellChecker()
