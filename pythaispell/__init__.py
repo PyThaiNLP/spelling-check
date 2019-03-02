@@ -2,8 +2,12 @@
 import codecs
 import re
 import string
+import os
+import pythaispell
 from pythainlp.tokenize import tcc
 from pythainlp.tokenize import syllable_tokenize as word_tokenize
+import sklearn_crfsuite
+from pythainlp.spell.pn import correct
 try:
     from pythainlp.corpus.thaisyllable import get_data as syllable_dict
     from pythainlp.corpus import stopwords
@@ -13,8 +17,7 @@ except:
     stopwords = list(thai_stopwords())
     syllable_dict = thai_syllables
 
-import sklearn_crfsuite
-from pythainlp.spell.pn import correct
+templates_file = os.path.join(os.path.dirname(pythaispell.__file__),"sp.model")
 invalidChars = set(string.punctuation.replace("_", ""))
 dict_s=list(set(syllable_dict()))
 def c(word):
@@ -85,7 +88,7 @@ def lennum(word,num):
     if len(word)==num:
         return True
     return False
-def doc2features(doc, i):
+def _doc2features(doc, i):
     word = doc[i][0]
     # Features from current word
     features={
@@ -147,11 +150,8 @@ def doc2features(doc, i):
 
     return features
 
-def extract_features(doc):
-    return [doc2features(doc, i) for i in range(len(doc))]
-
-def get_labels(doc):
-    return [tag for (token,tag) in doc]
+def _extract_features(doc):
+    return [_doc2features(doc, i) for i in range(len(doc))]
 
 crf = sklearn_crfsuite.CRF(
     algorithm='pa',
@@ -159,13 +159,13 @@ crf = sklearn_crfsuite.CRF(
     #c2=0.1,
     max_iterations=450,#500,
     all_possible_transitions=True,
-    model_filename="sp.model"
+    model_filename=templates_file
 )
 
 def spell(text,autocorrect=False):
     word_cut=word_tokenize(text)
     #print(word_cut)
-    X_test = extract_features([(i,) for i in word_cut])
+    X_test = _extract_features([(i,) for i in word_cut])
     #print(X_test)
     y_=crf.predict_single(X_test)
     x= [(word_cut[i],data) for i,data in enumerate(y_)]
