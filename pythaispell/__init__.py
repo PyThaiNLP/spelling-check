@@ -7,7 +7,7 @@ import pythaispell
 from pythainlp.tokenize import tcc
 from pythainlp.tokenize import syllable_tokenize as word_tokenize
 import sklearn_crfsuite
-from pythainlp.spell.pn import correct
+from pythainlp.spell.pn import NorvigSpellChecker
 try:
     from pythainlp.corpus.thaisyllable import get_data as syllable_dict
     from pythainlp.corpus import stopwords
@@ -161,9 +161,24 @@ crf = sklearn_crfsuite.CRF(
     all_possible_transitions=True,
     model_filename=templates_file
 )
+check=NorvigSpellChecker()
+checking=""
 
-def spell(text,autocorrect=False):
+def spell(text,autocorrect=False,worddict=None):
+    global check,checking
     word_cut=word_tokenize(text)
+    if worddict=="thai2fit" and checking=="":
+        from pythainlp.word_vector import get_model
+        words = get_model().index2word
+        w_rank = {}
+        for i,word in enumerate(words):
+            w_rank[word] = i
+        word=w_rank.items()
+        check=NorvigSpellChecker(custom_dict=word)
+        checking="thai2fit"
+    else:
+        checking=""
+        check=NorvigSpellChecker()
     #print(word_cut)
     X_test = _extract_features([(i,) for i in word_cut])
     #print(X_test)
@@ -202,7 +217,7 @@ def spell(text,autocorrect=False):
         ii=len(listall)
         while i<ii:
             if listall[i]=="<คำผิด>":
-                output+=correct(listall[i+1])
+                output+=check.correct(listall[i+1])
                 i+=3
             else:
                 output+=listall[i]
