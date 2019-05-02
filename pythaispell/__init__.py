@@ -48,7 +48,7 @@ def is_special_characters(w):
 def is_numthai(w):
     return w in list("๑๒๓๔๕๖๗๘๙๐")
 def lenbytcc(w):
-    return tcc.tcc(w, sep="|=/=|").count('|=/=|')
+    return tcc.segment(w)
 def in_dict(word):
     return word in dict_s
 def has_silencer(word):
