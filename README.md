@@ -1,18 +1,17 @@
 # Thai Spell Check
 Thai Spell Check using Conditional Random Field (CRF) (Machine learning)
 
-Google Colab : https://colab.research.google.com/drive/1IE2r74a7Xb_h4haLtbgMTnQej9gmlbFK
 
 ## Requirements
 
-- PyThaiNLP
+- PyThaiNLP>=3.1
 - sklearn-crfsuite
 
 ## Using
 
 ```python
-import pythaispell
-print(pythaispell.spell("สวัสดีนะคับผม"))
+import thaispellcheck
+print(thaispellcheck.check("สวัสดีนะคับผม"))
 ```
 result 
 
@@ -22,9 +21,20 @@ result
 
 The words in <คำผิด> are wrong words.
 
+if you wan to use autocorrect to fix the mistake word, use autocorrect=True in check function.
+```python
+import thaispellcheck
+print(thaispellcheck.check("เราไปโรงเรยนกัน",autocorrect=True))
+```
+result
+
+```
+เราไปโรงเรียนกัน
+```
+
 ## License
 
-   Copyright 2019 Wannaphong Phatthiyaphaibun
+   Copyright 2019-2023 Wannaphong Phatthiyaphaibun
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

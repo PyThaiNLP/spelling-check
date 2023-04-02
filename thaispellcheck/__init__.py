@@ -1,72 +1,79 @@
 # -*- coding: utf-8 -*-
-import codecs
-import re
 import string
 import os
-import pythaispell
+import thaispellcheck
 from pythainlp.tokenize import tcc
-from pythainlp.tokenize import syllable_tokenize as word_tokenize
+from pythainlp.tokenize import subword_tokenize
 import sklearn_crfsuite
-from pythainlp.spell.pn import NorvigSpellChecker
-try:
-    from pythainlp.corpus.thaisyllable import get_data as syllable_dict
-    from pythainlp.corpus import stopwords
-    stopwords = stopwords.words('thai')
-except:
-    from pythainlp.corpus.common import thai_syllables,thai_stopwords
-    stopwords = list(thai_stopwords())
-    syllable_dict = thai_syllables
+from pythainlp.spell import correct
+from pythainlp.corpus import thai_syllables,thai_stopwords
+stopwords = list(thai_stopwords())
+syllable_dict = thai_syllables
 
-templates_file = os.path.join(os.path.dirname(pythaispell.__file__),"sp.model")
+templates_file = os.path.join(os.path.dirname(thaispellcheck.__file__),"sp.model")
 invalidChars = set(string.punctuation.replace("_", ""))
 dict_s=list(set(syllable_dict()))
+
+#Feature
+
 def c(word):
     for i in list('กขฃคฆงจชซญฎฏฐฑฒณดตถทธนบปพฟภมยรลวศษสฬอ'):
         if i in word:
             return True
     return False
+
 def n(word):
     for i in list('ฅฉผฟฌหฮ'):
         if i in word:
             return True
     return False
+
 def v(word):
     for i in list('ะาำิีืึุู'):
         if i in word:
             return True
     return False
+
 def w(word):
     for i in list('เแโใไ'):
         if i in word:
             return True
     return False
+
 def is_special_characters(w):
     if any(char in invalidChars for char in w):
         return True
     else:
         return False
+
 def is_numthai(w):
     return w in list("๑๒๓๔๕๖๗๘๙๐")
+
 def lenbytcc(w):
     return tcc.segment(w)
+
 def in_dict(word):
     return word in dict_s
+
 def has_silencer(word):
     for i in list('์ๆฯ.'):
         if i in word:
             return True
     return False
+
 def has_tonemarks(word):
     t=False
     for i in ['่','้','็','๊','๋']:
         if i in word:
             t=True
     return t
+
 def isThai(chr):
  cVal = ord(chr)
  if(cVal >= 3584 and cVal <= 3711):
   return True
  return False
+
 def isThaiWord(word):
  t=True
  for i in word:
@@ -78,6 +85,7 @@ def isThaiWord(word):
 
 def is_stopword(word):
     return word in stopwords
+
 def is_s(word):
     if word == " " or word =="\t" or word=="" or word=="\r\n" or word=="\n":
         return True
@@ -88,6 +96,7 @@ def lennum(word,num):
     if len(word)==num:
         return True
     return False
+
 def _doc2features(doc, i):
     word = doc[i][0]
     # Features from current word
@@ -161,34 +170,15 @@ crf = sklearn_crfsuite.CRF(
     all_possible_transitions=True,
     model_filename=templates_file
 )
-check=NorvigSpellChecker()
-checking=""
 
-def spell(text,autocorrect=False,worddict=None):
-    global check,checking
-    word_cut=word_tokenize(text)
-    if worddict=="thai2fit" and checking=="":
-        from pythainlp.word_vector import get_model
-        words = get_model().index2word
-        w_rank = {}
-        for i,word in enumerate(words):
-            w_rank[word] = i
-        word=w_rank.items()
-        check=NorvigSpellChecker(custom_dict=word)
-        checking="thai2fit"
-    elif checking=="thai2fit" and worddict!=None:
-        pass
-    else:
-        checking=""
-        check=NorvigSpellChecker()
-    #print(word_cut)
+
+def check(text: str,autocorrect: bool=False):
+    word_cut=subword_tokenize(text, engine="dict")
     X_test = _extract_features([(i,) for i in word_cut])
-    #print(X_test)
     y_=crf.predict_single(X_test)
     x= [(word_cut[i],data) for i,data in enumerate(y_)]
     output=""
     temp=''
-    #print(x)
     for i,b in enumerate(x):
         if i==len(x)-1 and 'B' in b[1] and temp=='B':
             output+="</คำผิด><คำผิด>"+b[0]+"</คำผิด>"
@@ -219,7 +209,7 @@ def spell(text,autocorrect=False,worddict=None):
         ii=len(listall)
         while i<ii:
             if listall[i]=="<คำผิด>":
-                output+=check.correct(listall[i+1])
+                output+=correct(listall[i+1])
                 i+=3
             else:
                 output+=listall[i]
