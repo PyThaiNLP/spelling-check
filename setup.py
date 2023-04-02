@@ -5,7 +5,7 @@ requirements = [
     'pythainlp>=3.1',
     'sklearn-crfsuite'
 ]
-with open("READ.md", "r", encoding="utf-8") as f:
+with open("README.md", "r", encoding="utf-8") as f:
     readme = f.read()
 
 setup(
