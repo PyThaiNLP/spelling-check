@@ -1,6 +1,8 @@
 # Thai Spell Check
 Thai Spell Check using Conditional Random Field (CRF) (Machine learning)
 
+Google colab: [Colab](https://colab.research.google.com/github/PyThaiNLP/spelling-check/blob/master/notebooks/thaispellcheck.ipynb)
+
 
 ## Requirements
 
